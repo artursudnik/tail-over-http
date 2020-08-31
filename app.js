@@ -45,7 +45,6 @@ module.exports = {
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
-app.disable('etag');
 app.disable('x-powered-by');
 
 app.use(require('log4js').connectLogger(loggerAccessLog, {level: process.env.ACCESS_LOG_LEVEL}));

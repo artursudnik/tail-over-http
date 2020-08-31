@@ -1,0 +1,39 @@
+extends layout
+block append styles
+    style.
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font: 13px Helvetica, Arial;
+        }
+
+        #log {
+            font-family: monospace;
+        }
+block content
+    div#log
+block append scripts
+    script(src=libs["socket.io-client"].path)
+    script(type="text/javascript").
+        var socket = io();
+
+        const logContainer = document.getElementById('log');
+
+        socket.on('tail', (msg) => {
+            const lines = msg.split(/\r?\n/).filter(line => line !== "");
+            lines.forEach((line) => {
+                const lineParagraph = document.createElement('p');
+                lineParagraph.innerText = line;
+
+                // logContainer.appendChild(lineParagraph);
+                logContainer.insertBefore(lineParagraph, logContainer.firstChild);
+            })
+        });
+
+        socket.on('error message', (msg) => {
+            alert(`error message from the server: ${msg}`);
+        });
