@@ -6,13 +6,17 @@ const asyncHandler = require('express-async-handler'),
       express      = require('express'),
       path         = require('path'),
       router       = express.Router(),
+      split2       = require('split2'),
       socketIo     = require('socket.io');
 
 module.exports = router;
 
 
 require('../lib/webserver').getInstance().then(server => {
-    const io = socketIo(server);
+    const io = socketIo(server, {
+        pingInterval     : process.env.IO_PING_INTERVAL,
+        pingTimeout      : process.env.IO_PING_TIMEOUT,
+    });
     io.on('connection', (socket) => {
         logger.debug(`a user connected`);
 
@@ -24,7 +28,7 @@ require('../lib/webserver').getInstance().then(server => {
         });
 
         tail.on('close', (code) => {
-            if(code) {
+            if (code) {
                 logger.error(`tail exited with code=${code}`);
                 socket.emit('error message', 'log stream stopped unexpectedly');
             } else {
@@ -36,7 +40,7 @@ require('../lib/webserver').getInstance().then(server => {
             logger.error(data.toString());
         });
 
-        tail.stdout.on('data', (data) => {
+        tail.stdout.pipe(split2()).on('data', (data) => {
             socket.emit('tail', data.toString());
         });
 
@@ -54,13 +58,14 @@ router.use((req, res, next) => {
 
 router.use(
     `/static/socket.io-client/${require('socket.io-client/package.json').version}`,
-    express.static(path.join('node_modules', 'socket.io-client', 'dist'))
+    express.static(path.join('node_modules', 'socket.io-client', 'dist'), {immutable: true, maxAge: '1y'})
 );
 
 router.get('/', asyncHandler((req, res) => {
     res.setHeader('Cache-Control', 'public, max-age=0');
     res.render('tail', {
-        libs: {
+        pageTitle: 'Log stream.',
+        libs     : {
             "socket.io-client": {
                 version: require('socket.io-client/package.json').version,
                 path   : `/tail/static/socket.io-client/${require('socket.io-client/package.json').version}/socket.io.js`

@@ -1,0 +1,5 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="www.js" type="NodeJSConfigurationType" nameIsGenerated="true" path-to-js-file="www.js" working-dir="$PROJECT_DIR$/bin">
+    <method v="2" />
+  </configuration>
+</component>

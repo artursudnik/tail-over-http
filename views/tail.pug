@@ -13,27 +13,47 @@ block append styles
 
         #log {
             font-family: monospace;
+            white-space: pre;
         }
+
+        #log p.debug {
+            color: #5757dc;
+        }
+
+        #log p.info {
+            color: #259e25;
+        }
+
+        #log p.warn {
+            color: #bf3f3f;
+        }
+
+        #log p.error {
+            color: #ff0000;
+        }
+
+        #log p.trace {
+            color: #c333a4;
+        }
+
+        #log p.streamError {
+            color: #ffffff;
+            background-color: #963636;
+        }
+
+        #log p.streamInfo {
+            color: #ffffff;
+            background-color: #429c42;
+        }
+
+        #log p.streamSuccess {
+            color: #ffffff;
+            background-color: #4a4a9a;
+        }
+
 block content
     div#log
 block append scripts
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.20/lodash.min.js")
     script(src=libs["socket.io-client"].path)
-    script(type="text/javascript").
-        var socket = io();
-
-        const logContainer = document.getElementById('log');
-
-        socket.on('tail', (msg) => {
-            const lines = msg.split(/\r?\n/).filter(line => line !== "");
-            lines.forEach((line) => {
-                const lineParagraph = document.createElement('p');
-                lineParagraph.innerText = line;
-
-                // logContainer.appendChild(lineParagraph);
-                logContainer.insertBefore(lineParagraph, logContainer.firstChild);
-            })
-        });
-
-        socket.on('error message', (msg) => {
-            alert(`error message from the server: ${msg}`);
-        });
+    script(src=assetFingerprint("/tail/app.js"))

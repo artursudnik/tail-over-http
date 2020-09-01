@@ -10,13 +10,23 @@ const logWriteStream = fs.createWriteStream(path.join(__dirname, '..', 'logs', '
 });
 
 setInterval(() => {
-    logWriteStream.write(`${new Date().toISOString()} message 1000\n`);
+    logWriteStream.write(`[${new Date().toISOString()}] [${getRandomLevel()}] message 1000\n`);
 }, 1000);
 
 setInterval(() => {
-    logWriteStream.write(`${new Date().toISOString()} message 900\n`);
+    logWriteStream.write(`[${new Date().toISOString()}] [${getRandomLevel()}] message 900\n`);
 }, 900);
 
 setInterval(() => {
-    logWriteStream.write(`${new Date().toISOString()} message 600\n`);
+    logWriteStream.write(`[${new Date().toISOString()}] [${getRandomLevel()}] message 600\n`);
 }, 600);
+
+function getRandomLevel() {
+    const levels = [
+        'INFO', 'DEBUG', 'WARN', 'ERROR', 'TRACE'
+    ];
+
+    const randomIndex = Math.floor(Math.random() * levels.length);
+
+    return levels[randomIndex];
+}
