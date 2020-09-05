@@ -32,7 +32,8 @@ require('../lib/webserver').getInstance().then(server => {
                 logger.error(`tail exited with code=${code}`);
                 socket.emit('error message', 'log stream stopped unexpectedly');
             } else {
-                logger.debug('tail exited');
+                logger.error(`tail exited with no exit code`);
+                socket.emit('error message', 'log stream stopped unexpectedly');
             }
         });
 
