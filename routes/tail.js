@@ -20,7 +20,7 @@ require('../lib/webserver').getInstance().then(server => {
     io.on('connection', (socket) => {
         logger.debug(`a user connected`);
 
-        const tail = spawn("tail", ["-n", "50", "--retry", "-f", process.env.LOG_FILE]);
+        const tail = spawn("tail", ["-n", `${process.env.LINES_ON_INIT}`, "--retry", "-f", process.env.LOG_FILE]);
 
         tail.on('error', (err) => {
             logger.error(`error spawning tail: ${err}`);
