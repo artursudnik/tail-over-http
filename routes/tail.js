@@ -5,6 +5,7 @@ const asyncHandler = require('express-async-handler'),
       spawn        = require('child_process').spawn,
       express      = require('express'),
       path         = require('path'),
+      os           = require('os'),
       router       = express.Router(),
       split2       = require('split2'),
       socketIo     = require('socket.io');
@@ -20,7 +21,13 @@ require('../lib/webserver').getInstance().then(server => {
     io.on('connection', (socket) => {
         logger.debug(`a user connected`);
 
-        const tail = spawn("tail", ["-n", `${process.env.LINES_ON_INIT}`, "--retry", "-f", process.env.LOG_FILE]);
+        const options = [`-n ${process.env.LINES_ON_INIT}`, "-f", process.env.LOG_FILE];
+
+        if (os.platform() !== 'darwin') {
+            options.push('--retry');
+        }
+
+        const tail = spawn("tail", options);
 
         tail.on('error', (err) => {
             logger.error(`error spawning tail: ${err}`);
