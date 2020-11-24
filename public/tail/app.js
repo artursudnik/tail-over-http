@@ -27,9 +27,9 @@ manager.on('reconnect', () => {
     displayBufferedLogLinesDebounce();
 });
 
-manager.on('reconnect_error', () => {
+manager.on('reconnect_error', (err) => {
     const lineParagraph     = document.createElement('p');
-    lineParagraph.innerText = `[MANAGER RECONNECT ERROR] ${new Date().toISOString()}`;
+    lineParagraph.innerText = `[MANAGER RECONNECT ERROR] ${new Date().toISOString()} ${err}`;
 
     lineParagraph.className = 'streamError';
 
