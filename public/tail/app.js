@@ -1,4 +1,4 @@
-var socket = io({
+const manager = new io.Manager(null, {
     transports          : ['websocket'],
     reconnection        : true,             // whether to reconnect automatically
     reconnectionAttempts: Infinity,         // number of reconnection attempts before giving up
@@ -7,9 +7,47 @@ var socket = io({
     randomizationFactor : 0
 });
 
-socket.on('reconnect_attempt', () => {
-    socket.io.opts.transports = ['polling', 'websocket'];
+manager.on('reconnect_attempt', (attemptNumber) => {
+    const lineParagraph     = document.createElement('p');
+    lineParagraph.innerText = `[MANAGER RECONNECTING] ${new Date().toISOString()} (reconnect attempt ${attemptNumber})`;
+
+    lineParagraph.className = 'streamInfo';
+
+    logLinesElementsBuffer.push(lineParagraph);
+    displayBufferedLogLinesDebounce();
 });
+
+manager.on('reconnect', () => {
+    const lineParagraph     = document.createElement('p');
+    lineParagraph.innerText = `[MANAGER RECONNECTED] ${new Date().toISOString()}`;
+
+    lineParagraph.className = 'streamSuccess';
+
+    logLinesElementsBuffer.push(lineParagraph);
+    displayBufferedLogLinesDebounce();
+});
+
+manager.on('reconnect_error', () => {
+    const lineParagraph     = document.createElement('p');
+    lineParagraph.innerText = `[MANAGER RECONNECT ERROR] ${new Date().toISOString()}`;
+
+    lineParagraph.className = 'streamError';
+
+    logLinesElementsBuffer.push(lineParagraph);
+    displayBufferedLogLinesDebounce();
+});
+
+manager.on('close', () => {
+    const lineParagraph     = document.createElement('p');
+    lineParagraph.innerText = `[MANAGER DISCONNECTED] ${new Date().toISOString()}`;
+
+    lineParagraph.className = 'streamSuccess';
+
+    logLinesElementsBuffer.push(lineParagraph);
+    displayBufferedLogLinesDebounce();
+});
+
+var socket = manager.socket('/');
 
 const logContainer = document.getElementById('log');
 
@@ -67,7 +105,7 @@ socket.on('error message', (msg) => {
 
 socket.on('disconnect', () => {
     const lineParagraph     = document.createElement('p');
-    lineParagraph.innerText = `[WARNING!!! DISCONNECTED] ${new Date().toISOString()}`;
+    lineParagraph.innerText = `[WARNING!!! SOCKET DISCONNECTED] ${new Date().toISOString()}`;
 
     lineParagraph.className = 'streamError';
 
@@ -75,29 +113,9 @@ socket.on('disconnect', () => {
     displayBufferedLogLinesDebounce();
 });
 
-socket.on('reconnecting', () => {
-    const lineParagraph     = document.createElement('p');
-    lineParagraph.innerText = `[RECONNECTING] ${new Date().toISOString()}`;
-
-    lineParagraph.className = 'streamInfo';
-
-    logLinesElementsBuffer.push(lineParagraph);
-    displayBufferedLogLinesDebounce();
-});
-
-socket.on('reconnect', () => {
-    const lineParagraph     = document.createElement('p');
-    lineParagraph.innerText = `[RECONNECTED, CONTINUING STREAMING DATA] ${new Date().toISOString()}`;
-
-    lineParagraph.className = 'streamSuccess';
-
-    logLinesElementsBuffer.push(lineParagraph);
-    displayBufferedLogLinesDebounce();
-});
-
 socket.on('connect', () => {
     const lineParagraph     = document.createElement('p');
-    lineParagraph.innerText = `[CONNECTED] ${new Date().toISOString()}`;
+    lineParagraph.innerText = `[SOCKET CONNECTED] ${new Date().toISOString()}`;
 
     lineParagraph.className = 'streamSuccess';
 
