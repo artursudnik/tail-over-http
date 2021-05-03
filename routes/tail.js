@@ -21,11 +21,7 @@ require('../lib/webserver').getInstance().then(server => {
     io.on('connection', (socket) => {
         logger.debug(`a user connected`);
 
-        const options = [`-n ${process.env.LINES_ON_INIT}`, "-f", process.env.LOG_FILE];
-
-        if (os.platform() !== 'darwin') {
-            options.push('--retry');
-        }
+        const options = [`-n ${process.env.LINES_ON_INIT}`, "-F", process.env.LOG_FILE];
 
         const tail = spawn("tail", options);
 
