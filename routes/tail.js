@@ -21,7 +21,7 @@ require('../lib/webserver').getInstance().then(server => {
     io.on('connection', (socket) => {
         logger.debug(`a user connected`);
 
-        const options = [`-n ${process.env.LINES_ON_INIT}`, "-F", process.env.LOG_FILE];
+        const options = [`-n${process.env.LINES_ON_INIT}`, "-F", process.env.LOG_FILE];
 
         const tail = spawn("tail", options);
 
